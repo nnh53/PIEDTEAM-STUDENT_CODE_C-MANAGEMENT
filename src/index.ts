@@ -12,6 +12,7 @@ import studentRouter from './students/student.routes'
 import testManagementRouter from './testmanagements/testManagement.routes'
 import testRouter from './tests/test.routes'
 import userRouter from './users/user.routes'
+import testCaseRouter from './testcases/testcase.routes'
 
 // Config environment
 dotenv.config()
@@ -35,6 +36,7 @@ app.use('/students', studentRouter)
 app.use('/testmanagements', testManagementRouter)
 app.use('/tests', testRouter)
 app.use('/users', userRouter)
+app.use('/testcases', testCaseRouter)
 
 // Run server
 httpServer.listen(port, () => {

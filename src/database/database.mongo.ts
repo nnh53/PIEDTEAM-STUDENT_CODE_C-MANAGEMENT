@@ -1,6 +1,7 @@
-//import { MongoClient, Db, Collection } from 'mongodb'
-import { Db, MongoClient, Collection } from 'mongodb'
+import { MongoClient, Db, Collection } from 'mongodb'
 import IConnection from './type.connection'
+import dotenv from 'dotenv'
+dotenv.config()
 
 class MongodbDatabase implements IConnection {
   public connectName: string
@@ -15,10 +16,10 @@ class MongodbDatabase implements IConnection {
   private constructor() {
     this.host = ''
     this.port = 0
-    this.connectString = `mongodb+srv://${process.env.DB_USERNAME_MONGO}:${process.env.DB_PASSWORD_MONGO}@cluster0.bk3ncay.mongodb.net/?retryWrites=true&w=majority`
+    this.connectString = `mongodb+srv://${process.env.DB_USERNAME_MONGO}:${process.env.DB_PASSWORD_MONGO}@cluster0.bk3ncay.mongodb.net/`
     this.connectName = 'MongoDB Atlas'
     this.client = new MongoClient(this.connectString)
-    this.db = this.client.db(`${process.env.DB_NAME}`)
+    this.db = this.client.db(`${process.env.DB_NAME_MONGO}`)
   }
 
   public static getInstance(): MongodbDatabase {
