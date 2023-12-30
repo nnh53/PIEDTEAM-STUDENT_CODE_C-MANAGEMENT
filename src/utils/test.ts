@@ -1,6 +1,6 @@
 import { exec } from 'child_process'
-import { HTTP_STATUS } from '~/constrants/httpStatus';
-import { ErrorWithStatus } from '~/error/error.model';
+import { HTTP_STATUS } from '~/constrants/httpStatus'
+import { ErrorWithStatus } from '~/error/error.model'
 
 export const testFunction = (
   testCase: string,
@@ -45,7 +45,7 @@ export const testFunction = (
 export const checkFunction = async (
   testCases: Array<string>,
   expectedValues: Array<string>,
-  executedPath: { compiledExeCutable: string, compileCommand: string }
+  executedPath: { compiledExeCutable: string; compileCommand: string }
 ): Promise<Array<{ testCase: string; actualValue: string; expectedValue: string }>> => {
   const promises = testCases.map(async (testCase) => {
     return await testFunction(testCase, executedPath)
