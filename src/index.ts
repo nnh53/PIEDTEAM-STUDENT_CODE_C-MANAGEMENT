@@ -13,6 +13,8 @@ import testManagementRouter from './testmanagements/testManagement.routes'
 import testRouter from './tests/test.routes'
 import userRouter from './users/user.routes'
 import testCaseRouter from './testcases/testcase.routes'
+import { defaultErrorHandler } from './error/error.middlewares'
+import { initFolder } from './utils/files'
 
 // Config environment
 dotenv.config()
@@ -20,6 +22,9 @@ const app = express()
 const httpServer = createServer(app)
 const port = process.env.SERVER_PORT
 const server = process.env.SERVER_HOST
+
+// Init folder
+initFolder()
 
 // Connect to database
 const database = Database.getInstance()
@@ -37,6 +42,8 @@ app.use('/testmanagements', testManagementRouter)
 app.use('/tests', testRouter)
 app.use('/users', userRouter)
 app.use('/testcases', testCaseRouter)
+
+app.use(defaultErrorHandler)
 
 // Run server
 httpServer.listen(port, () => {

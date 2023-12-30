@@ -1,4 +1,6 @@
+import { Request } from 'express'
 import MongodbDatabase from '~/database/database.mongo'
+import { getNameFromFullname, handleUploadImage } from '~/utils/files'
 
 const mongodbDatabase = MongodbDatabase.getInstance()
 
@@ -14,7 +16,13 @@ class TestManagementsServices {
     return TestManagementsServices.instance
   }
 
-  async uploadImageService(req: any) {}
+  async uploadImageService(req: Request) {
+    const file = await handleUploadImage(req)
+    const filename = file.newFilename
+    return {
+      url: `${process.env.SERVER_HOST}/files/${filename}`
+    }
+  }
 }
 
 export default TestManagementsServices
