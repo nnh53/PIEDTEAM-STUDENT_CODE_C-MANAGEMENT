@@ -5,8 +5,6 @@ import path from 'path'
 import { UPLOAD_FILE_DIR } from '~/constrants/dir'
 import { HTTP_STATUS } from '~/constrants/httpStatus'
 import { ErrorWithStatus } from '~/error/error.model'
-import { exec } from 'child_process'
-import { run } from 'node:test'
 
 export const initFolder = () => {
   if (!fs.existsSync(UPLOAD_FILE_DIR)) {
@@ -61,51 +59,8 @@ const getNameFromPath = (filepath: string) => {
   return pathArr.join('.')
 }
 
-export const readCFile = (filepath: string) => {
-  fs.readFile(filepath, 'utf8', function (err, data) {
-    if (err) {
-      throw new ErrorWithStatus({
-        message: 'File is not valid',
-        status: HTTP_STATUS.BAD_REQUEST
-      })
-    }
-    //do something with data
-  })
-}
-
-export const buileFileToExe = (filepath: string): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const compiledExeCutable = `${getNameFromPath(filepath)}.exe`
-    const compileCommand = `gcc ${filepath} -o ${compiledExeCutable}`
-
-    const childProcess = exec(compileCommand, async (error, stdout, stderr) => {
-      if (error || stderr) {
-        reject(
-          new ErrorWithStatus({
-            message: 'File is not valid',
-            status: HTTP_STATUS.BAD_REQUEST
-          })
-        )
-        return
-      }
-
-      const runningChildProcess = exec(`${compiledExeCutable}`, (runError, runStdout, runStderr) => {
-        if (runError || runStderr) {
-          reject(
-            new ErrorWithStatus({
-              message: 'File is not valid',
-              status: HTTP_STATUS.BAD_REQUEST
-            })
-          )
-          return
-        }
-        const result = runStdout.split('\n')[2]
-        resolve(result) // Resolve with the obtained result
-      })
-
-      const inputData = '12345\n'
-      runningChildProcess.stdin?.write(inputData)
-      runningChildProcess.stdin?.end()
-    })
-  })
+export const buileFileToExe = (filepath: string) => {
+  const compiledExeCutable = `${getNameFromPath(filepath)}.exe`
+  const compileCommand = `gcc ${filepath} -o ${compiledExeCutable}`
+  return { compiledExeCutable, compileCommand }
 }
