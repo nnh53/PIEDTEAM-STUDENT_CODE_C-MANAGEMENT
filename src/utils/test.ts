@@ -4,7 +4,6 @@ import { ErrorWithStatus } from '~/error/error.model'
 import fs from 'fs'
 import path from 'path'
 import { getExePath } from './files'
-import { log } from 'console'
 
 export const testFunction = (
   testCase: string,
@@ -82,42 +81,11 @@ export const checkFunction = async (
   return { student_id, question, fail }
 }
 
-// export const checkFunction = async (
-//   student_id: string,
-//   testCases: Array<string>,
-//   expectedValues: Array<string>,
-//   executedPath: { compiledExeCutable: string; compileCommand: string }
-// ): Promise<{ student_id: string; fail: Array<{ testCase: string; actualValue: string; expectedValue: string }> }> => {
-//   const promises = testCases.map(async (testCase) => {
-//     return await testFunction(testCase, executedPath)
-//   })
-//   const results = await Promise.allSettled(promises)
-//   const fail: Array<{ testCase: string; actualValue: string; expectedValue: string }> = []
-//   results.forEach((result, index) => {
-//     if (result.status === 'fulfilled') {
-//       const actualValue = result.value.actualValue.toLowerCase()
-//       const expectedValue = expectedValues[index].toLowerCase()
-//       if (actualValue !== expectedValue) {
-//         fail.push({ testCase: result.value.testCase, actualValue, expectedValue })
-//       }
-//     } else {
-//       fail.push({ testCase: testCases[index], actualValue: '', expectedValue: expectedValues[index] })
-//     }
-//   })
-//   return { student_id, fail }
-// }
-
 export const getClassResult = async (
   dirPath: string,
   testCases: Array<string>,
   expectedValues: Array<string>
-): Promise<
-  Array<{
-    student_id: string
-    question: string
-    fail: Array<{ testCase: string; actualValue: string; expectedValue: string }>
-  }>
-> => {
+): Promise<{ [key: string]: GroupedResultItem[] }> => {
   const studentResults: Array<{
     student_id: string
     question: string
@@ -140,7 +108,6 @@ export const getClassResult = async (
                     const numFileC = subFiles.filter((subFile) => path.extname(subFile) === '.c').length
                     for (const subFile of subFiles) {
                       const subfilepath = path.join(filepath, subFile)
-                      console.log(subfilepath)
                       if (path.extname(subfilepath) === '.c') {
                         const executedPath = getExePath(subfilepath)
                         const student_id = path.basename(path.dirname(subfilepath))
@@ -155,7 +122,8 @@ export const getClassResult = async (
                                 }
                                 return a.question.localeCompare(b.question)
                               })
-                              resolve(studentResults)
+                              const handledResult = handleResult(studentResults)
+                              resolve(handledResult)
                             }
                           })
                           .catch((err) => {
@@ -198,29 +166,45 @@ export const getClassResult = async (
         )
       })
   })
-  /**
-   * const files = await fs.promises.readdir(dirPath)
-    console.log(files)
-    for (const file of files) {
-      const filepath = path.join(dirPath, file)
-      const stat = await fs.promises.stat(filepath)
-      // console.log(stat)
-      if (stat.isDirectory()) {
-        console.log('isDirectory: ' + file)
-        const subfiles = await fs.promises.readdir(filepath)
-        console.log(subfiles)
-        for (const subfile of subfiles) {
-          const subfilepath = path.join(filepath, subfile)
-          console.log(subfilepath)
-          if (path.extname(subfilepath) === '.c') {
-            const executedPath = getExePath(subfilepath)
-            const student_id = path.basename(path.dirname(subfilepath))
-            const studentResult = await checkFunction(student_id, testCases, expectedValues, executedPath)
-            console.log(studentResult)
-            studentResults.push(studentResult)
-          }
-        }
+}
+
+interface GroupedResultItem {
+  question: string
+  fail: Array<{
+    testCase: string
+    actualValue: string
+    expectedValue: string
+  }>
+}
+
+const handleResult = (
+  results: Array<{
+    student_id: string
+    question: string
+    fail: Array<{ testCase: string; actualValue: string; expectedValue: string }>
+  }>
+) => {
+  const groupedResults: { [key: string]: GroupedResultItem[] } = results.reduce(
+    (acc, cur) => {
+      const { student_id, question, fail } = cur
+
+      if (!acc[student_id]) {
+        acc[student_id] = []
       }
-    }
-   */
+
+      const studentQuestions = acc[student_id]
+      const existingQuestion = studentQuestions.find((q) => q.question === question)
+
+      if (existingQuestion) {
+        existingQuestion.fail.push(...fail)
+      } else {
+        acc[student_id].push({ question, fail })
+      }
+
+      return acc
+    },
+    {} as { [key: string]: GroupedResultItem[] }
+  )
+
+  return groupedResults
 }
