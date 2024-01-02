@@ -83,6 +83,97 @@ export const checkFunction = async (
 
 export const getClassResult = async (
   dirPath: string,
+  testPrepare: { [key: string]: { testCases: Array<string>; expectedValues: Array<string> } }
+): Promise<{ [key: string]: GroupedResultItem[] }> => {
+  const studentResults: Array<{
+    student_id: string
+    question: string
+    fail: Array<{ testCase: string; actualValue: string; expectedValue: string }>
+  }> = []
+
+  return new Promise((resolve, reject) => {
+    fs.promises
+      .readdir(dirPath)
+      .then((files) => {
+        for (const file of files) {
+          const filepath = path.join(dirPath, file)
+          fs.promises
+            .stat(filepath)
+            .then((stats) => {
+              if (stats.isDirectory()) {
+                fs.promises
+                  .readdir(filepath)
+                  .then((subFiles) => {
+                    const numFileC = subFiles.filter((subFile) => path.extname(subFile) === '.c').length
+                    for (const subFile of subFiles) {
+                      const subfilepath = path.join(filepath, subFile)
+                      if (path.extname(subfilepath) === '.c') {
+                        const executedPath = getExePath(subfilepath)
+                        const student_id = path.basename(path.dirname(subfilepath))
+                        const parsePath = path.parse(executedPath.compiledExeCutable)
+                        const question = parsePath.name
+                        const testCases = testPrepare[question].testCases
+                        const expectedValues = testPrepare[question].expectedValues
+                        checkFunction(student_id, testCases, expectedValues, executedPath)
+                          .then((studentResult) => {
+                            studentResults.push(studentResult)
+                            if (studentResults.length === files.length * numFileC) {
+                              studentResults.sort((a, b) => {
+                                const student_idCompare = a.student_id.localeCompare(b.student_id)
+                                if (student_idCompare !== 0) {
+                                  return student_idCompare
+                                }
+                                return a.question.localeCompare(b.question)
+                              })
+                              const handledResult = handleResult(studentResults)
+                              resolve(handledResult)
+                            }
+                          })
+                          .catch((err) => {
+                            reject(
+                              new ErrorWithStatus({
+                                message: err.message,
+                                status: HTTP_STATUS.BAD_REQUEST
+                              })
+                            )
+                          })
+                      }
+                    }
+                  })
+                  .catch((err) => {
+                    reject(
+                      new ErrorWithStatus({
+                        message: err.message,
+                        status: HTTP_STATUS.BAD_REQUEST
+                      })
+                    )
+                  })
+              }
+            })
+            .catch((err) => {
+              reject(
+                new ErrorWithStatus({
+                  message: err.message,
+                  status: HTTP_STATUS.BAD_REQUEST
+                })
+              )
+            })
+        }
+      })
+      .catch((err) => {
+        reject(
+          new ErrorWithStatus({
+            message: err.message,
+            status: HTTP_STATUS.BAD_REQUEST
+          })
+        )
+      })
+  })
+}
+
+/**
+ * export const getClassResult = async (
+  dirPath: string,
   testCases: Array<string>,
   expectedValues: Array<string>
 ): Promise<{ [key: string]: GroupedResultItem[] }> => {
@@ -167,6 +258,7 @@ export const getClassResult = async (
       })
   })
 }
+ */
 
 interface GroupedResultItem {
   question: string

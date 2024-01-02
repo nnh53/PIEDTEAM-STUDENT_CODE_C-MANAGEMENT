@@ -1,10 +1,8 @@
 import { Request, Response } from 'express'
 import { TEST_MANAGEMENT_MESSAGES } from './testManagement.messages'
 import TestManagementsServices from './testManagement.services'
-import { getExePath } from '~/utils/files'
-import { checkFunction, getClassResult } from '~/utils/test'
+import { getClassResult } from '~/utils/test'
 import { UPLOAD_FILE_DIR } from '~/constrants/dir'
-import { log } from 'console'
 import { ErrorWithStatus } from '~/error/error.model'
 
 const testManagementsServicesInstance = TestManagementsServices.getInstance()
@@ -27,12 +25,37 @@ export const uploadFileController = async (req: Request, res: Response) => {
   //   }
   // }
   try {
-    const testCases = ['11\n0\n']
-    const expectedValues = ['Nhap n di cu: \r\n11 - 2 - 1\r\nNhap n di cu: ']
-    const classResult = await getClassResult(UPLOAD_FILE_DIR, testCases, expectedValues)
+    const testPrepare = {
+      main1: {
+        testCases: ['10a\n100\n', '1234\n'],
+        expectedValues: ['Nhap n di cu: \r\nNhap n di cu: \r\n1', 'Nhap n di cu: \r\n10']
+      },
+      main2: {
+        testCases: ['10a\n1\n', '6\n'],
+        expectedValues: ['Nhap n di cu: \r\nNhap n di cu: \r\n1', 'Nhap n di cu: \r\n8']
+      },
+      main3: {
+        testCases: ['10a\n1\n', '9\n', '5/n'],
+        expectedValues: [
+          'Nhap n di cu: \r\nNhap n di cu: \r\n1',
+          'Nhap n di cu: \r\nLa so nguyen to',
+          'Nhap n di cu: \r\nnKhong phai so nguyen to'
+        ]
+      },
+      main4: {
+        testCases: ['10a\n1\n', '10\n'],
+        expectedValues: ['Nhap n di cu: \r\nNhap n di cu: \r\n1', 'Nhap n di cu: \r\n1\n3\n5\n7\n9']
+      }
+    }
+    const classResult = await getClassResult(UPLOAD_FILE_DIR, testPrepare)
+    if (classResult === null) {
+      return res.json({
+        message: 'Student has not submitted yet'
+      })
+    }
     return res.json({
-      message: 'Student has not submitted yet',
-      result: classResult
+      message: 'Class Result !',
+      classResult
     })
   } catch (err) {
     throw new ErrorWithStatus({
