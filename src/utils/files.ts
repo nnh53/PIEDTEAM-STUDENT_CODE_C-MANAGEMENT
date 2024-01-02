@@ -15,12 +15,13 @@ export const initFolder = () => {
   }
 }
 
-export const handleUploadImage = async (req: Request) => {
+export const handleUploadFile = async (req: Request) => {
+  //Create File will User Directly Upload
   const form = formidable({
     uploadDir: path.resolve(UPLOAD_FILE_DIR),
-    maxFiles: 4,
+    maxFiles: 1,
     keepExtensions: true,
-    maxFileSize: 5 * 1024, // 5KB,
+    maxFileSize: 10 * 1024, // 10KB,
     filter: function ({ name, originalFilename, mimetype }) {
       const valid = name === 'file' && Boolean(mimetype?.includes('text/x-c'))
       if (!valid) {
@@ -59,7 +60,7 @@ const getNameFromPath = (filepath: string) => {
   return pathArr.join('.')
 }
 
-export const buileFileToExe = (filepath: string) => {
+export const getExePath = (filepath: string) => {
   const compiledExeCutable = `${getNameFromPath(filepath)}.exe`
   const compileCommand = `gcc ${filepath} -o ${compiledExeCutable}`
   return { compiledExeCutable, compileCommand }
