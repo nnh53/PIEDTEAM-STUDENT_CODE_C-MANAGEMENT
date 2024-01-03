@@ -7,6 +7,34 @@ import { ErrorWithStatus } from '~/error/error.model'
 
 const testManagementsServicesInstance = TestManagementsServices.getInstance()
 
+export const getStudentResultController = async (req: Request, res: Response) => {
+  const { id } = req.params
+  const testPrepare = {
+    main1: {
+      testCases: ['1234\n'],
+      expectedValues: ['Nhap so n: \r\n10']
+    },
+    main2: {
+      testCases: ['6\n'],
+      expectedValues: ['Nhap so n: \r\n8']
+    },
+    main3: {
+      testCases: ['9\n', '5\n'],
+      expectedValues: ['Nhap so n: \r\nKhong phai so nguyen to', 'Nhap so n: \r\nLa so nguyen to']
+    },
+    main4: {
+      testCases: ['10\n'],
+      expectedValues: ['Nhap so n: \r\n1\r\n3\r\n5\r\n7\r\n9']
+    }
+  }
+  const classResult = await getClassResult(UPLOAD_FILE_DIR, testPrepare)
+  const studentResult = classResult[id]
+  return res.json({
+    message: 'Class Result !',
+    studentResult
+  })
+}
+
 export const getClassResultController = async (req: Request, res: Response) => {
   const testPrepare = {
     main1: {
