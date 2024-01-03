@@ -1,4 +1,5 @@
-import { Request } from 'express'
+import { ChildProcess, exec } from 'child_process'
+import e, { Request } from 'express'
 import formidable, { File } from 'formidable'
 import fs from 'fs'
 import path from 'path'
@@ -61,7 +62,14 @@ const getNameFromPath = (filepath: string) => {
 }
 
 export const getExePath = (filepath: string) => {
-  const compiledExeCutable = `${getNameFromPath(filepath)}.exe`
-  const compileCommand = `gcc ${filepath} -o ${compiledExeCutable}`
-  return { compiledExeCutable, compileCommand }
+  return new Promise<{ compiledExeCutable: string; program: ChildProcess }>((resolve, reject) => {
+    const compiledExeCutable = `${getNameFromPath(filepath)}.exe`
+    const compileCommand = `gcc ${filepath} -o ${compiledExeCutable}`
+    const program = exec(compileCommand, async (error, stdout, stderr) => {
+      if (error || stderr) {
+        return reject(error || stderr)
+      }
+    })
+    resolve({ compiledExeCutable, program })
+  })
 }

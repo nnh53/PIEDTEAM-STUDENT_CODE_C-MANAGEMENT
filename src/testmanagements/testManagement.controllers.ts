@@ -24,45 +24,34 @@ export const uploadFileController = async (req: Request, res: Response) => {
   //     })
   //   }
   // }
-  try {
-    const testPrepare = {
-      main1: {
-        testCases: ['10a\n100\n', '1234\n'],
-        expectedValues: ['Nhap n di cu: \r\nNhap n di cu: \r\n1', 'Nhap n di cu: \r\n10']
-      },
-      main2: {
-        testCases: ['10a\n1\n', '6\n'],
-        expectedValues: ['Nhap n di cu: \r\nNhap n di cu: \r\n1', 'Nhap n di cu: \r\n8']
-      },
-      main3: {
-        testCases: ['10a\n1\n', '9\n', '5/n'],
-        expectedValues: [
-          'Nhap n di cu: \r\nNhap n di cu: \r\n1',
-          'Nhap n di cu: \r\nLa so nguyen to',
-          'Nhap n di cu: \r\nnKhong phai so nguyen to'
-        ]
-      },
-      main4: {
-        testCases: ['10a\n1\n', '10\n'],
-        expectedValues: ['Nhap n di cu: \r\nNhap n di cu: \r\n1', 'Nhap n di cu: \r\n1\n3\n5\n7\n9']
-      }
+  const testPrepare = {
+    main1: {
+      testCases: ['1234\n'],
+      expectedValues: ['Nhap so n: \r\n10']
+    },
+    main2: {
+      testCases: ['6\n'],
+      expectedValues: ['Nhap so n: \r\n8']
+    },
+    main3: {
+      testCases: ['9\n', '5\n'],
+      expectedValues: ['Nhap so n: \r\nKhong phai so nguyen to', 'Nhap so n: \r\nLa so nguyen to']
+    },
+    main4: {
+      testCases: ['10\n'],
+      expectedValues: ['Nhap so n: \r\n1\r\n3\r\n5\r\n7\r\n9']
     }
-    const classResult = await getClassResult(UPLOAD_FILE_DIR, testPrepare)
-    if (classResult === null) {
-      return res.json({
-        message: 'Student has not submitted yet'
-      })
-    }
+  }
+  const classResult = await getClassResult(UPLOAD_FILE_DIR, testPrepare)
+  if (classResult === null) {
     return res.json({
-      message: 'Class Result !',
-      classResult
-    })
-  } catch (err) {
-    throw new ErrorWithStatus({
-      message: err as string, // Type assertion to specify the type of 'err' as string
-      status: 400
+      message: 'Student has not submitted yet'
     })
   }
+  return res.json({
+    message: 'Class Result !',
+    classResult
+  })
   // return res.json({
   //   message: TEST_MANAGEMENT_MESSAGES.UPLOAD_FILE_SUCCESS,
   //   result: file
