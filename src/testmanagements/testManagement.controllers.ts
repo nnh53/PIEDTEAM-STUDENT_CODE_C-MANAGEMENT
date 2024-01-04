@@ -11,20 +11,35 @@ export const getStudentResultController = async (req: Request, res: Response) =>
   const { id } = req.params
   const testPrepare = {
     main1: {
-      testCases: ['1234\n'],
-      expectedValues: ['Nhap so n: \r\n10']
+      testCases: ['1\n2\n3\n', '2\n2\n3\n', '3\n2\n3\n', '3\n4\n5\n', '2\n2\n2\n', '6\n7\n8\n'],
+      expectedValues: [
+        'Nhap so a: \r\nNhap so b: \r\nNhap so c: \r\nKhong phai tam giac',
+        'Nhap so a: \r\nNhap so b: \r\nNhap so c: \r\nTam giac can',
+        'Nhap so a: \r\nNhap so b: \r\nNhap so c: \r\nTam giac can',
+        'Nhap so a: \r\nNhap so b: \r\nNhap so c: \r\nTam giac vuong',
+        'Nhap so a: \r\nNhap so b: \r\nNhap so c: \r\nTam giac deu',
+        'Nhap so a: \r\nNhap so b: \r\nNhap so c: \r\nTam giac thuong'
+      ]
     },
     main2: {
-      testCases: ['6\n'],
-      expectedValues: ['Nhap so n: \r\n8']
+      testCases: ['10\n'],
+      expectedValues: ['Nhap so n: \r\n55']
     },
     main3: {
-      testCases: ['9\n', '5\n'],
-      expectedValues: ['Nhap so n: \r\nKhong phai so nguyen to', 'Nhap so n: \r\nLa so nguyen to']
+      testCases: ['1\n', '5\n', '7\n'],
+      expectedValues: ['Nhap so n: \r\n1', 'Nhap so n: \r\n5', 'Nhap so n: \r\n13']
     },
     main4: {
-      testCases: ['10\n'],
-      expectedValues: ['Nhap so n: \r\n1\r\n3\r\n5\r\n7\r\n9']
+      testCases: ['1\n10\n', '10\n1\n'],
+      expectedValues: ['Nhap start: \r\nNhap end: \r\n4-3-5-5', 'Nhap start: \r\nNhap end: \r\n4-3-5-5']
+    },
+    main5: {
+      testCases: ['7\n', '5\n'],
+      expectedValues: ['Nhap so n: \r\n0', 'Nhap so n: \r\n1']
+    },
+    main6: {
+      testCases: ['1234\n', '1123\n'],
+      expectedValues: ['Nhap so n: \r\n10-24-4321', 'Nhap so n: \r\n7-6-3211']
     }
   }
   const classResult = await getClassResult(UPLOAD_FILE_DIR, testPrepare)
@@ -92,36 +107,37 @@ export const getClassResultController = async (req: Request, res: Response) => {
 export const uploadFileController = async (req: Request, res: Response) => {
   // const file = await testManagementsServicesInstance.uploadFileService(req)
   // const executedPath = getExePath(file.path)
-  // const student_id = '123'
-  // const studentResult = await checkFunction(student_id, testCases, expectedValues, executedPath)
-  // if (file) {
-  //   if (studentResult.fail.length === 0) {
-  //     return res.json({
-  //       message: "Student's answer is correct"
-  //     })
-  //   } else {
-  //     return res.json({
-  //       message: "Student's answer is incorrect",
-  //       studentResult
-  //     })
-  //   }
-  // }
   const testPrepare = {
     main1: {
-      testCases: ['1234\n'],
-      expectedValues: ['Nhap so n: \r\n10']
+      testCases: ['1\n2\n3\n', '2\n2\n3\n', '3\n2\n3\n', '3\n4\n5\n', '2\n2\n2\n', '6\n7\n8\n'],
+      expectedValues: [
+        'Nhap so a: \r\nNhap so b: \r\nNhap so c: \r\nKhong phai tam giac',
+        'Nhap so a: \r\nNhap so b: \r\nNhap so c: \r\nTam giac can',
+        'Nhap so a: \r\nNhap so b: \r\nNhap so c: \r\nTam giac can',
+        'Nhap so a: \r\nNhap so b: \r\nNhap so c: \r\nTam giac vuong',
+        'Nhap so a: \r\nNhap so b: \r\nNhap so c: \r\nTam giac deu',
+        'Nhap so a: \r\nNhap so b: \r\nNhap so c: \r\nTam giac thuong'
+      ]
     },
     main2: {
-      testCases: ['6\n'],
-      expectedValues: ['Nhap so n: \r\n8']
+      testCases: ['10\n'],
+      expectedValues: ['Nhap so n: \r\n55']
     },
     main3: {
-      testCases: ['9\n', '5\n'],
-      expectedValues: ['Nhap so n: \r\nKhong phai so nguyen to', 'Nhap so n: \r\nLa so nguyen to']
+      testCases: ['1\n', '5\n', '7\n'],
+      expectedValues: ['Nhap so n: \r\n1', 'Nhap so n: \r\n5', 'Nhap so n: \r\n13']
     },
     main4: {
-      testCases: ['10\n'],
-      expectedValues: ['Nhap so n: \r\n1\r\n3\r\n5\r\n7\r\n9']
+      testCases: ['1\n10\n', '10\n1\n'],
+      expectedValues: ['Nhap start: \r\nNhap end: \r\n4-3-5-5', 'Nhap start: \r\nNhap end: \r\n4-3-5-5']
+    },
+    main5: {
+      testCases: ['7\n', '5\n'],
+      expectedValues: ['Nhap so n: \r\n0', 'Nhap so n: \r\n1']
+    },
+    main6: {
+      testCases: ['1234\n', '1123\n'],
+      expectedValues: ['Nhap so n: \r\n10-24-4321', 'Nhap so n: \r\n7-6-3211']
     }
   }
   const classResult = await getClassResult(UPLOAD_FILE_DIR, testPrepare)
