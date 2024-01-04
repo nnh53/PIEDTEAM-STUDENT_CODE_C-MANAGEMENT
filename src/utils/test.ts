@@ -30,6 +30,15 @@ export const testFunction = (
     const inputData = testCase
     runningChildProcess.stdin?.write(inputData)
     runningChildProcess.stdin?.end()
+
+    setTimeout(() => {
+      runningChildProcess.kill()
+      resolve({
+        actualValue: 'Time limit exceeded',
+        testCase,
+        runningChildProcess
+      })
+    }, 300)
   })
 }
 
@@ -92,6 +101,7 @@ export const getClassResult = async (
 
               const studentResult = await checkFunction(student_id, testCases, expectedValues, compiledExeCutable)
               studentResults.push(studentResult)
+              // console.log(studentResult)
               program.kill()
               //console.log(program.killed)
             } catch (err) {

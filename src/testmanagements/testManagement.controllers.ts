@@ -22,8 +22,8 @@ export const getStudentResultController = async (req: Request, res: Response) =>
       ]
     },
     main2: {
-      testCases: ['10\n'],
-      expectedValues: ['Nhap so n: \r\n55']
+      testCases: ['10\n', '1234\n'],
+      expectedValues: ['Nhap so n: \r\n1', 'Nhap so n: \r\n10']
     },
     main3: {
       testCases: ['1\n', '5\n', '7\n'],
@@ -64,8 +64,8 @@ export const getClassResultController = async (req: Request, res: Response) => {
       ]
     },
     main2: {
-      testCases: ['10\n'],
-      expectedValues: ['Nhap so n: \r\n55']
+      testCases: ['10\n', '1234\n'],
+      expectedValues: ['Nhap so n: \r\n1', 'Nhap so n: \r\n10']
     },
     main3: {
       testCases: ['1\n', '5\n', '7\n'],
@@ -120,8 +120,8 @@ export const uploadFileController = async (req: Request, res: Response) => {
       ]
     },
     main2: {
-      testCases: ['10\n'],
-      expectedValues: ['Nhap so n: \r\n55']
+      testCases: ['10\n', '1234\n'],
+      expectedValues: ['Nhap so n: \r\n1', 'Nhap so n: \r\n10']
     },
     main3: {
       testCases: ['1\n', '5\n', '7\n'],
