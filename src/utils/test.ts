@@ -12,27 +12,11 @@ export const testFunction = (
   return new Promise((resolve, reject) => {
     const runningChildProcess = exec(`${exePath}`, { maxBuffer: 1024 }, (runError, runStdout, runStderr) => {
       if (runError) {
-        //console.log('runError')
-        //console.log(runError)
-        // return reject(
-        //   new ErrorWithStatus({
-        //     message: 'Problem in executing exe file',
-        //     status: HTTP_STATUS.BAD_REQUEST
-        //   })
-        // )
         resolve({
           actualValue: `${runError?.message}`,
           testCase,
           runningChildProcess
         })
-      }
-      if (runStderr) {
-        // console.log('runStderr')
-        // console.log(runStderr)
-        // resolve({
-        //   actualValue: `${runStderr}`,
-        //   testCase
-        // })
       }
       const actualValue = handleActualValue(runStdout)
       //console.log(runStdout)
@@ -60,11 +44,7 @@ export const checkFunction = async (
   testCases: Array<string>,
   expectedValues: Array<string>,
   executedPath: string
-): Promise<{
-  student_id: string
-  question: string
-  fail: Array<{ testCase: string; actualValue: string; expectedValue: string }>
-}> => {
+): Promise<GroupedResult> => {
   const promises = testCases.map(async (testCase) => {
     return await testFunction(testCase, executedPath)
   })
@@ -81,108 +61,11 @@ export const checkFunction = async (
   return { student_id, question, fail }
 }
 
-// export const getClassResult = async (
-//   dirPath: string,
-//   testPrepare: { [key: string]: { testCases: Array<string>; expectedValues: Array<string> } }
-// ): Promise<{ [key: string]: GroupedResultItem[] }> => {
-//   const studentResults: Array<{
-//     student_id: string
-//     question: string
-//     fail: Array<{ testCase: string; actualValue: string; expectedValue: string }>
-//   }> = []
-
-//   return new Promise((resolve, reject) => {
-//     fs.promises
-//       .readdir(dirPath)
-//       .then((files) => {
-//         //Duyệt Forder bên trong Forder Files
-//         for (const file of files) {
-//           const filepath = path.join(dirPath, file)
-//           fs.promises
-//             .stat(filepath)
-//             .then((stats) => {
-//               if (stats.isDirectory()) {
-//                 fs.promises
-//                   .readdir(filepath)
-//                   .then((subFiles) => {
-//                     const numFileC = subFiles.filter((subFile) => path.extname(subFile) === '.exe').length
-//                     //Duyệt các file bên trong Forder Student
-//                     for (const subFile of subFiles) {
-//                       const subfilepath = path.join(filepath, subFile)
-//                       if (path.extname(subfilepath) === '.c') {
-//                         getExePath(subfilepath).then((exePath) => {
-//                           const student_id = path.basename(path.dirname(subfilepath))
-//                           const parsePath = path.parse(exePath)
-//                           const question = parsePath.name
-//                           const testCases = testPrepare[question].testCases
-//                           const expectedValues = testPrepare[question].expectedValues
-//                           checkFunction(student_id, testCases, expectedValues, exePath)
-//                             .then((studentResult) => {
-//                               studentResults.push(studentResult)
-//                               if (studentResults.length === files.length * numFileC) {
-//                                 studentResults.sort((a, b) => {
-//                                   const student_idCompare = a.student_id.localeCompare(b.student_id)
-//                                   if (student_idCompare !== 0) {
-//                                     return student_idCompare
-//                                   }
-//                                   return a.question.localeCompare(b.question)
-//                                 })
-//                                 const handledResult = handleResult(studentResults)
-//                                 resolve(handledResult)
-//                               }
-//                             })
-//                             .catch((err) => {
-//                               reject(
-//                                 new ErrorWithStatus({
-//                                   message: err.message,
-//                                   status: HTTP_STATUS.BAD_REQUEST
-//                                 })
-//                               )
-//                             })
-//                         })
-//                       }
-//                     }
-//                   })
-//                   .catch((err) => {
-//                     reject(
-//                       new ErrorWithStatus({
-//                         message: err.message,
-//                         status: HTTP_STATUS.BAD_REQUEST
-//                       })
-//                     )
-//                   })
-//               }
-//             })
-//             .catch((err) => {
-//               reject(
-//                 new ErrorWithStatus({
-//                   message: err.message,
-//                   status: HTTP_STATUS.BAD_REQUEST
-//                 })
-//               )
-//             })
-//         }
-//       })
-//       .catch((err) => {
-//         reject(
-//           new ErrorWithStatus({
-//             message: err.message,
-//             status: HTTP_STATUS.BAD_REQUEST
-//           })
-//         )
-//       })
-//   })
-// }
-
 export const getClassResult = async (
   dirPath: string,
   testPrepare: { [key: string]: { testCases: Array<string>; expectedValues: Array<string> } }
 ): Promise<{ [key: string]: GroupedResultItem[] }> => {
-  const studentResults: Array<{
-    student_id: string
-    question: string
-    fail: Array<{ testCase: string; actualValue: string; expectedValue: string }>
-  }> = []
+  const studentResults: GroupedResult[] = []
 
   try {
     const files = await fs.promises.readdir(dirPath)
@@ -241,13 +124,17 @@ interface GroupedResultItem {
   }>
 }
 
-const handleResult = (
-  results: Array<{
-    student_id: string
-    question: string
-    fail: Array<{ testCase: string; actualValue: string; expectedValue: string }>
+interface GroupedResult {
+  student_id: string
+  question: string
+  fail: Array<{
+    testCase: string
+    actualValue: string
+    expectedValue: string
   }>
-) => {
+}
+
+const handleResult = (results: GroupedResult[]) => {
   const groupedResults: { [key: string]: GroupedResultItem[] } = results.reduce(
     (acc, cur) => {
       const { student_id, question, fail } = cur
@@ -260,8 +147,10 @@ const handleResult = (
       const existingQuestion = studentQuestions.find((q) => q.question === question)
 
       if (existingQuestion) {
+        //handle question with different test cases
         existingQuestion.fail.push(...fail)
       } else {
+        //handle new question
         acc[student_id].push({ question, fail })
       }
 
