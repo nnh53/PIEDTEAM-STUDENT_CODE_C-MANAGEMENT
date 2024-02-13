@@ -1,5 +1,5 @@
 import { ChildProcess, exec } from 'child_process'
-import { HTTP_STATUS } from '~/constrants/httpStatus'
+import { HTTP_STATUS } from '~/constraints/httpStatus'
 import { ErrorWithStatus } from '~/error/error.model'
 import fs from 'fs'
 import path from 'path'

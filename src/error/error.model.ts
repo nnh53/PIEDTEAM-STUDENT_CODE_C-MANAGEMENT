@@ -1,4 +1,4 @@
-import { HTTP_STATUS } from '~/constrants/httpStatus'
+import { HTTP_STATUS } from '~/constraints/httpStatus'
 import ERROR_MESSAGES from './error.messages'
 
 //tạo kiểu lỗi giống thiết kế ban đâu

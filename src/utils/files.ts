@@ -3,8 +3,8 @@ import e, { Request } from 'express'
 import formidable, { File } from 'formidable'
 import fs from 'fs'
 import path from 'path'
-import { UPLOAD_FILE_DIR } from '~/constrants/dir'
-import { HTTP_STATUS } from '~/constrants/httpStatus'
+import { UPLOAD_FILE_DIR } from '~/constraints/dir'
+import { HTTP_STATUS } from '~/constraints/httpStatus'
 import { ErrorWithStatus } from '~/error/error.model'
 
 export const initFolder = () => {

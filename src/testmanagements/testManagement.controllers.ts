@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import { TEST_MANAGEMENT_MESSAGES } from './testManagement.messages'
 import TestManagementsServices from './testManagement.services'
 import { getClassResult } from '~/utils/test'
-import { UPLOAD_FILE_DIR } from '~/constrants/dir'
+import { UPLOAD_FILE_DIR } from '~/constraints/dir'
 import { ErrorWithStatus } from '~/error/error.model'
 
 const testManagementsServicesInstance = TestManagementsServices.getInstance()
